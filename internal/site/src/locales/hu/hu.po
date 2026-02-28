@@ -279,6 +279,10 @@ msgstr "Bináris"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Bitek (Kbps, Mbps, Gbps)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "Docker konténerek blokk I/O átviteli sebessége"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Indítási állapot"
@@ -588,6 +592,10 @@ msgstr "Lemezhasználat a {extraFsName}"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "Docker CPU használat"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "Docker lemez I/O"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

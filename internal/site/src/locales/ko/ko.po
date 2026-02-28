@@ -279,6 +279,10 @@ msgstr "실행 파일"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "비트 (Kbps, Mbps, Gbps)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "Docker 컨테이너 블록 I/O 처리량"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "부팅 상태"
@@ -588,6 +592,10 @@ msgstr "{extraFsName}의 디스크 사용량"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "Docker CPU 사용량"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "Docker 디스크 I/O"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

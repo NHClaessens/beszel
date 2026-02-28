@@ -279,6 +279,10 @@ msgstr "בינרי"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "ביטים (Kbps, Mbps, Gbps)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "תפוקת קלט/פלט בלוקים של מיכלי Docker"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "מצב אתחול"
@@ -588,6 +592,10 @@ msgstr "שימוש בדיסק של {extraFsName}"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "שימוש CPU של Docker"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "קלט/פלט דיסק Docker"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

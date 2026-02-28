@@ -279,6 +279,10 @@ msgstr "執行檔"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "位元 (Kbps, Mbps, Gbps)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "Docker 容器的區塊 I/O 吞吐量"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "啟動狀態"
@@ -588,6 +592,10 @@ msgstr "{extraFsName} 的磁碟使用量"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "Docker CPU 使用率"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "Docker 磁碟 I/O"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

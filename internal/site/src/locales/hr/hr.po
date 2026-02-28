@@ -279,6 +279,10 @@ msgstr "Binarni"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Bitovi (Kbps, Mbps, Gbps)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "Propusnost blokovskog I/O Docker kontejnera"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Stanje pokretanja"
@@ -588,6 +592,10 @@ msgstr "Iskorištenost diska od {extraFsName}"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "Iskorištenost Docker procesora"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "Docker disk I/O"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

@@ -279,6 +279,10 @@ msgstr "دودویی"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "بیت (کیلوبیت بر ثانیه، مگابیت بر ثانیه، گیگابیت بر ثانیه)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "توان خروجی ورودی/خروجی بلوکی کانتینرهای Docker"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "وضعیت بوت"
@@ -588,6 +592,10 @@ msgstr "میزان استفاده از دیسک {extraFsName}"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "میزان استفاده از CPU داکر"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "ورودی/خروجی دیسک Docker"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

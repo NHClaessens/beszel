@@ -279,6 +279,10 @@ msgstr "Nhị phân"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Bit (Kbps, Mbps, Gbps)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "Thông lượng I/O khối của container Docker"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Trạng thái khởi động"
@@ -588,6 +592,10 @@ msgstr "Sử dụng đĩa của {extraFsName}"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "Sử dụng CPU Docker"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "I/O đĩa Docker"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

@@ -279,6 +279,10 @@ msgstr "Binär"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Bits (Kbps, Mbps, Gbps)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "Block-E/A-Durchsatz der Docker-Container"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Boot-Zustand"
@@ -588,6 +592,10 @@ msgstr "Festplattennutzung von {extraFsName}"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "Docker-CPU-Auslastung"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "Docker-Datenträger-I/O"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"

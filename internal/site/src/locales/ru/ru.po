@@ -279,6 +279,10 @@ msgstr "Двоичный"
 msgid "Bits (Kbps, Mbps, Gbps)"
 msgstr "Биты (Кбит/с, Мбит/с, Гбит/с)"
 
+#: src/components/routes/system.tsx
+msgid "Block I/O throughput of docker containers"
+msgstr "Пропускная способность блочного ввода-вывода контейнеров Docker"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Boot state"
 msgstr "Состояние загрузки"
@@ -588,6 +592,10 @@ msgstr "Использование диска {extraFsName}"
 #: src/components/routes/system.tsx
 msgid "Docker CPU Usage"
 msgstr "Использование CPU Docker"
+
+#: src/components/routes/system.tsx
+msgid "Docker Disk I/O"
+msgstr "Дисковый ввод-вывод Docker"
 
 #: src/components/routes/system.tsx
 msgid "Docker Memory Usage"
