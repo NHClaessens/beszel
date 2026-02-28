@@ -37,6 +37,7 @@ export default memo(function ContainerChart({
 	const { containerData } = chartData
 
 	const isNetChart = chartType === ChartType.Network
+	const isDiskChart = chartType === ChartType.Disk
 
 	// Filter with set lookup
 	const filteredKeys = useMemo(() => {
@@ -69,9 +70,9 @@ export default memo(function ContainerChart({
 				return updateYAxisWidth(val)
 			}
 		} else {
-			const chartUnit = isNetChart ? userSettings.unitNet : Unit.Bytes
+			const chartUnit = isNetChart ? userSettings.unitNet : isDiskChart ? userSettings.unitDisk : Unit.Bytes
 			obj.tickFormatter = (val) => {
-				const { value, unit } = formatBytes(val, isNetChart, chartUnit, !isNetChart)
+				const { value, unit } = formatBytes(val, isNetChart || isDiskChart, chartUnit, !isNetChart && !isDiskChart)
 				return updateYAxisWidth(`${toFixedFloat(value, value >= 10 ? 0 : 1)} ${unit}`)
 			}
 		}
@@ -122,6 +123,51 @@ export default memo(function ContainerChart({
 					return null
 				}
 			}
+		} else if (isDiskChart) {
+			const getReadWriteBytes = (record?: { d?: [number, number] }) => {
+				if (record?.d?.length && record.d.length >= 2) {
+					return [Number(record.d[0]) || 0, Number(record.d[1]) || 0]
+				}
+				return [0, 0]
+			}
+			const formatReadWrite = (read: number, write: number) => {
+				const { value: readValue, unit: readUnit } = formatBytes(read, true, userSettings.unitDisk, false)
+				const { value: writeValue, unit: writeUnit } = formatBytes(write, true, userSettings.unitDisk, false)
+				return (
+					<span className="flex">
+						{decimalString(readValue)} {readUnit}
+						<span className="opacity-70 ms-0.5"> read </span>
+						<Separator orientation="vertical" className="h-3 mx-1.5 bg-primary/40" />
+						{decimalString(writeValue)} {writeUnit}
+						<span className="opacity-70 ms-0.5"> write</span>
+					</span>
+				)
+			}
+			obj.toolTipFormatter = (item: any, key: string) => {
+				try {
+					if (key === "__total__") {
+						let totalRead = 0
+						let totalWrite = 0
+						const payloadData = item?.payload && typeof item.payload === "object" ? item.payload : {}
+						for (const [containerKey, value] of Object.entries(payloadData)) {
+							if (!value || typeof value !== "object") {
+								continue
+							}
+							if (filteredKeys.has(containerKey)) {
+								continue
+							}
+							const [read, write] = getReadWriteBytes(value as { d?: [number, number] })
+							totalRead += read
+							totalWrite += write
+						}
+						return formatReadWrite(totalRead, totalWrite)
+					}
+					const [read, write] = getReadWriteBytes(item?.payload?.[key])
+					return formatReadWrite(read, write)
+				} catch (e) {
+					return null
+				}
+			}
 		} else if (chartType === ChartType.Memory) {
 			obj.toolTipFormatter = (item: any) => {
 				const { value, unit } = formatBytes(item.value, false, Unit.Bytes, true)
@@ -140,6 +186,17 @@ export default memo(function ContainerChart({
 				const sent = payload?.b?.[0] ?? (payload?.ns ?? 0) * 1024 * 1024
 				const recv = payload?.b?.[1] ?? (payload?.nr ?? 0) * 1024 * 1024
 				return sent + recv
+			}
+		} else if (isDiskChart) {
+			obj.dataFunction = (key: string, data: any) => {
+				const payload = data[key]
+				if (!payload) {
+					return null
+				}
+				// Use 0 when d is missing (omitzero when [0,0]) so chart is continuous and all containers show
+				const read = payload.d?.[0] ?? 0
+				const write = payload.d?.[1] ?? 0
+				return read + write
 			}
 		} else {
 			obj.dataFunction = (key: string, data: any) => data[key]?.[dataKey] ?? null

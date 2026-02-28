@@ -279,7 +279,7 @@ func TestUpdateContainerStatsValues(t *testing.T) {
 	}
 
 	testTime := time.Now()
-	updateContainerStatsValues(stats, 75.5, 1048576, 524288, 262144, testTime)
+	updateContainerStatsValues(stats, 75.5, 1048576, 524288, 262144, 0, 0, testTime)
 
 	// Check CPU percentage (should be rounded to 2 decimals)
 	assert.Equal(t, 75.5, stats.Cpu)
@@ -421,6 +421,8 @@ func TestCalculateNetworkStats(t *testing.T) {
 	dm := &dockerManager{
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 	}
 
 	cacheTimeMs := uint16(30000)
@@ -473,6 +475,8 @@ func TestDockerManagerCreation(t *testing.T) {
 		lastCpuReadTime:     make(map[uint16]map[string]time.Time),
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 	}
 
 	assert.NotNil(t, dm)
@@ -627,6 +631,8 @@ func TestCycleNetworkDeltas(t *testing.T) {
 	dm := &dockerManager{
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 	}
 
 	cacheTimeMs := uint16(30000)
@@ -664,6 +670,8 @@ func TestDockerStatsWithMockData(t *testing.T) {
 		lastCpuReadTime:     make(map[uint16]map[string]time.Time),
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		containerStatsMap:   make(map[string]*container.Stats),
 	}
 
@@ -738,7 +746,7 @@ func TestContainerStatsInitialization(t *testing.T) {
 
 	// Test updating values
 	testTime := time.Now()
-	updateContainerStatsValues(stats, 45.67, 2097152, 1048576, 524288, testTime)
+	updateContainerStatsValues(stats, 45.67, 2097152, 1048576, 524288, 0, 0, testTime)
 
 	assert.Equal(t, 45.67, stats.Cpu)
 	assert.Equal(t, 2.0, stats.Mem)
@@ -809,6 +817,8 @@ func TestNetworkStatsCalculationWithRealData(t *testing.T) {
 	dm := &dockerManager{
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 	}
 
 	ctr := &container.ApiInfo{IdShort: "test-container"}
@@ -870,6 +880,8 @@ func TestContainerStatsEndToEndWithRealData(t *testing.T) {
 		lastCpuReadTime:     make(map[uint16]map[string]time.Time),
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		containerStatsMap:   make(map[string]*container.Stats),
 	}
 
@@ -902,7 +914,7 @@ func TestContainerStatsEndToEndWithRealData(t *testing.T) {
 	// Test stats value updates
 	testStats := &container.Stats{}
 	testTime := time.Now()
-	updateContainerStatsValues(testStats, cpuPct, usedMemory, 1000000, 500000, testTime)
+	updateContainerStatsValues(testStats, cpuPct, usedMemory, 1000000, 500000, 0, 0, testTime)
 
 	assert.Equal(t, cpuPct, testStats.Cpu)
 	assert.Equal(t, bytesToMegabytes(float64(usedMemory)), testStats.Mem)
@@ -991,6 +1003,8 @@ func TestDockerStatsWorkflow(t *testing.T) {
 		lastCpuSystem:       make(map[uint16]map[string]uint64),
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		containerStatsMap:   make(map[string]*container.Stats),
 	}
 
@@ -1080,6 +1094,8 @@ func TestDeltaTrackerCacheTimeIsolation(t *testing.T) {
 	dm := &dockerManager{
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 	}
 
 	ctr := &container.ApiInfo{IdShort: "web-server"}

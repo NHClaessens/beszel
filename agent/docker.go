@@ -36,6 +36,8 @@ const (
 	dockerTimeoutMs = 2100
 	// Maximum realistic network speed (5 GB/s) to detect bad deltas
 	maxNetworkSpeedBps uint64 = 5e9
+	// Maximum realistic disk throughput (10 GB/s) to detect bad blkio deltas
+	maxDiskSpeedBps uint64 = 10e9
 	// Maximum conceivable memory usage of a container (100TB) to detect bad memory stats
 	maxMemoryUsage uint64 = 100 * 1024 * 1024 * 1024 * 1024
 	// Number of log lines to request when fetching container logs
@@ -74,7 +76,10 @@ type dockerManager struct {
 	// cacheTimeMs -> DeltaTracker for network bytes sent/received
 	networkSentTrackers map[uint16]*deltatracker.DeltaTracker[string, uint64]
 	networkRecvTrackers map[uint16]*deltatracker.DeltaTracker[string, uint64]
-	retrySleep          func(time.Duration)
+	// Disk I/O delta trackers - one per cache time (Linux blkio; not populated on Windows)
+	diskReadTrackers  map[uint16]*deltatracker.DeltaTracker[string, uint64]
+	diskWriteTrackers map[uint16]*deltatracker.DeltaTracker[string, uint64]
+	retrySleep        func(time.Duration)
 }
 
 // userAgentRoundTripper is a custom http.RoundTripper that adds a User-Agent header to all requests
@@ -201,8 +206,9 @@ func (dm *dockerManager) getDockerStats(cacheTimeMs uint16) ([]*container.Stats,
 		}
 	}
 
-	// prepare network trackers for next interval for this cache time
+	// prepare network and disk trackers for next interval for this cache time
 	dm.cycleNetworkDeltasForCacheTime(cacheTimeMs)
+	dm.cycleDiskDeltasForCacheTime(cacheTimeMs)
 
 	return stats, nil
 }
@@ -281,6 +287,71 @@ func (dm *dockerManager) cycleNetworkDeltasForCacheTime(cacheTimeMs uint16) {
 	}
 }
 
+// getDiskTracker returns the DeltaTracker for disk read or write for a specific cache time.
+func (dm *dockerManager) getDiskTracker(cacheTimeMs uint16, isRead bool) *deltatracker.DeltaTracker[string, uint64] {
+	var trackers map[uint16]*deltatracker.DeltaTracker[string, uint64]
+	if isRead {
+		trackers = dm.diskReadTrackers
+	} else {
+		trackers = dm.diskWriteTrackers
+	}
+	if trackers[cacheTimeMs] == nil {
+		trackers[cacheTimeMs] = deltatracker.NewDeltaTracker[string, uint64]()
+	}
+	return trackers[cacheTimeMs]
+}
+
+// cycleDiskDeltasForCacheTime cycles the disk I/O delta trackers for a specific cache time.
+func (dm *dockerManager) cycleDiskDeltasForCacheTime(cacheTimeMs uint16) {
+	if dm.diskReadTrackers[cacheTimeMs] != nil {
+		dm.diskReadTrackers[cacheTimeMs].Cycle()
+	}
+	if dm.diskWriteTrackers[cacheTimeMs] != nil {
+		dm.diskWriteTrackers[cacheTimeMs].Cycle()
+	}
+}
+
+// calculateBlkioStats computes per-container disk read/write bytes per second from blkio_stats.
+// Linux only; returns 0,0 on Windows or when blkio_stats are absent.
+func (dm *dockerManager) calculateBlkioStats(ctr *container.ApiInfo, apiStats *container.ApiStats, stats *container.Stats, initialized bool, name string, cacheTimeMs uint16) (readBps, writeBps uint64) {
+	if dm.isWindows {
+		return 0, 0
+	}
+	readTotal, writeTotal := apiStats.BlkioStats.ReadWriteBytes()
+
+	// Debug: confirm blkio_stats are present and what we parsed (set LOG_LEVEL=debug)
+	if readTotal > 0 || writeTotal > 0 {
+		slog.Debug("Container blkio totals", "container", name, "read_bytes", readTotal, "write_bytes", writeTotal)
+	}
+
+	readTracker := dm.getDiskTracker(cacheTimeMs, true)
+	writeTracker := dm.getDiskTracker(cacheTimeMs, false)
+	readTracker.Set(ctr.IdShort, readTotal)
+	writeTracker.Set(ctr.IdShort, writeTotal)
+
+	readDeltaRaw := readTracker.Delta(ctr.IdShort)
+	writeDeltaRaw := writeTracker.Delta(ctr.IdShort)
+
+	if !initialized {
+		return 0, 0
+	}
+	msElapsed := uint64(time.Since(stats.PrevReadTime).Milliseconds())
+	if msElapsed == 0 {
+		return 0, 0
+	}
+	readBps = readDeltaRaw * 1000 / msElapsed
+	writeBps = writeDeltaRaw * 1000 / msElapsed
+	if readBps > maxDiskSpeedBps {
+		slog.Warn("Bad disk read delta", "container", name)
+		readBps = 0
+	}
+	if writeBps > maxDiskSpeedBps {
+		slog.Warn("Bad disk write delta", "container", name)
+		writeBps = 0
+	}
+	return readBps, writeBps
+}
+
 // calculateNetworkStats calculates network sent/receive deltas using DeltaTracker
 func (dm *dockerManager) calculateNetworkStats(ctr *container.ApiInfo, apiStats *container.ApiStats, stats *container.Stats, initialized bool, name string, cacheTimeMs uint16) (uint64, uint64) {
 	var total_sent, total_recv uint64
@@ -335,10 +406,11 @@ func validateCpuPercentage(cpuPct float64, containerName string) error {
 }
 
 // updateContainerStatsValues updates the final stats values
-func updateContainerStatsValues(stats *container.Stats, cpuPct float64, usedMemory uint64, sent_delta, recv_delta uint64, readTime time.Time) {
+func updateContainerStatsValues(stats *container.Stats, cpuPct float64, usedMemory uint64, sent_delta, recv_delta, diskReadBps, diskWriteBps uint64, readTime time.Time) {
 	stats.Cpu = twoDecimals(cpuPct)
 	stats.Mem = bytesToMegabytes(float64(usedMemory))
 	stats.Bandwidth = [2]uint64{sent_delta, recv_delta}
+	stats.DiskIO = [2]uint64{diskReadBps, diskWriteBps}
 	// TODO(0.19+): stop populating NetworkSent/NetworkRecv (deprecated in 0.18.3)
 	stats.NetworkSent = bytesToMegabytes(float64(sent_delta))
 	stats.NetworkRecv = bytesToMegabytes(float64(recv_delta))
@@ -409,6 +481,7 @@ func (dm *dockerManager) updateContainerStats(ctr *container.ApiInfo, cacheTimeM
 	stats.Cpu = 0
 	stats.Mem = 0
 	stats.Bandwidth = [2]uint64{0, 0}
+	stats.DiskIO = [2]uint64{0, 0}
 	// TODO(0.19+): stop populating NetworkSent/NetworkRecv (deprecated in 0.18.3)
 	stats.NetworkSent = 0
 	stats.NetworkRecv = 0
@@ -453,6 +526,9 @@ func (dm *dockerManager) updateContainerStats(ctr *container.ApiInfo, cacheTimeM
 	// Calculate network stats using DeltaTracker
 	sent_delta, recv_delta := dm.calculateNetworkStats(ctr, res, stats, initialized, name, cacheTimeMs)
 
+	// Calculate disk I/O from blkio_stats (Linux only)
+	diskReadBps, diskWriteBps := dm.calculateBlkioStats(ctr, res, stats, initialized, name, cacheTimeMs)
+
 	// Store current network values for legacy compatibility
 	var total_sent, total_recv uint64
 	for _, v := range res.Networks {
@@ -462,7 +538,7 @@ func (dm *dockerManager) updateContainerStats(ctr *container.ApiInfo, cacheTimeM
 	stats.PrevNet.Sent, stats.PrevNet.Recv = total_sent, total_recv
 
 	// Update final stats values
-	updateContainerStatsValues(stats, cpuPct, usedMemory, sent_delta, recv_delta, res.Read)
+	updateContainerStatsValues(stats, cpuPct, usedMemory, sent_delta, recv_delta, diskReadBps, diskWriteBps, res.Read)
 	// store per-cache-time read time for Windows CPU percent calc
 	dm.lastCpuReadTime[cacheTimeMs][ctr.IdShort] = res.Read
 
@@ -483,6 +559,7 @@ func (dm *dockerManager) deleteContainerStatsSync(id string) {
 	for ct := range dm.lastCpuReadTime {
 		delete(dm.lastCpuReadTime[ct], id)
 	}
+	// Disk trackers have no per-key delete; stale container IDs are harmless and get overwritten
 }
 
 // Creates a new http client for Docker or Podman API
@@ -568,6 +645,8 @@ func newDockerManager() *dockerManager {
 		lastCpuReadTime:     make(map[uint16]map[string]time.Time),
 		networkSentTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		networkRecvTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskReadTrackers:    make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+		diskWriteTrackers:   make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
 		retrySleep:          time.Sleep,
 	}
 

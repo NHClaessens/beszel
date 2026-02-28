@@ -220,6 +220,8 @@ interface ContainerStats {
 	nr?: number
 	/** bandwidth bytes [sent, recv] */
 	b?: [number, number]
+	/** disk I/O bytes/s [read, write]; Linux only */
+	d?: [number, number]
 }
 
 export interface SystemStatsRecord extends RecordModel {

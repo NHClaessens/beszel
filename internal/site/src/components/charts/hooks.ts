@@ -2,11 +2,12 @@ import { useMemo, useState } from "react"
 import type { ChartConfig } from "@/components/ui/chart"
 import type { ChartData, SystemStats, SystemStatsRecord } from "@/types"
 
-/** Chart configurations for CPU, memory, and network usage charts */
+/** Chart configurations for CPU, memory, network, and disk I/O usage charts */
 export interface ContainerChartConfigs {
 	cpu: ChartConfig
 	memory: ChartConfig
 	network: ChartConfig
+	disk: ChartConfig
 }
 
 /**
@@ -20,6 +21,7 @@ export function useContainerChartConfigs(containerData: ChartData["containerData
 			cpu: {} as ChartConfig,
 			memory: {} as ChartConfig,
 			network: {} as ChartConfig,
+			disk: {} as ChartConfig,
 		}
 
 		// Aggregate usage metrics for each container
@@ -27,6 +29,7 @@ export function useContainerChartConfigs(containerData: ChartData["containerData
 			cpu: new Map<string, number>(),
 			memory: new Map<string, number>(),
 			network: new Map<string, number>(),
+			disk: new Map<string, number>(),
 		}
 
 		// Process each data point to calculate totals
@@ -46,16 +49,20 @@ export function useContainerChartConfigs(containerData: ChartData["containerData
 					continue
 				}
 
-				// Accumulate metrics for CPU, memory, and network
+				// Accumulate metrics for CPU, memory, network, and disk I/O
 				const currentCpu = totalUsage.cpu.get(containerName) ?? 0
 				const currentMemory = totalUsage.memory.get(containerName) ?? 0
 				const currentNetwork = totalUsage.network.get(containerName) ?? 0
+				const currentDisk = totalUsage.disk.get(containerName) ?? 0
 				const sentBytes = containerStats.b?.[0] ?? (containerStats.ns ?? 0) * 1024 * 1024
 				const recvBytes = containerStats.b?.[1] ?? (containerStats.nr ?? 0) * 1024 * 1024
+				const readBytes = containerStats.d?.[0] ?? 0
+				const writeBytes = containerStats.d?.[1] ?? 0
 
 				totalUsage.cpu.set(containerName, currentCpu + (containerStats.c ?? 0))
 				totalUsage.memory.set(containerName, currentMemory + (containerStats.m ?? 0))
 				totalUsage.network.set(containerName, currentNetwork + sentBytes + recvBytes)
+				totalUsage.disk.set(containerName, currentDisk + readBytes + writeBytes)
 			}
 		}
 

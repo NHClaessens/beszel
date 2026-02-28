@@ -1,6 +1,9 @@
 package container
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // Docker container info from /containers/json
 type ApiInfo struct {
@@ -25,6 +28,39 @@ type ApiInfo struct {
 	// Mounts          []MountPoint
 }
 
+// BlkioStatEntry is one entry from Docker blkio_stats (e.g. io_service_bytes_recursive).
+// Linux only; not populated on Windows.
+type BlkioStatEntry struct {
+	Major uint64 `json:"major"`
+	Minor uint64 `json:"minor"`
+	Op    string `json:"op"`    // "Read", "Write", "Sync", "Async", "Total", etc.
+	Value uint64 `json:"value"` // bytes or I/O count depending on the stat type
+}
+
+// BlkioStats holds block I/O stats from the container's cgroup. Linux only.
+type BlkioStats struct {
+	IoServiceBytesRecursive []BlkioStatEntry `json:"io_service_bytes_recursive,omitempty"`
+	IoServiceBytes          []BlkioStatEntry `json:"io_service_bytes,omitempty"` // older Docker
+}
+
+// ReadWriteBytes returns total bytes read and total bytes written from block I/O.
+// It sums the "Read" and "Write" op values from io_service_bytes_recursive or io_service_bytes.
+func (b *BlkioStats) ReadWriteBytes() (read, write uint64) {
+	entries := b.IoServiceBytesRecursive
+	if len(entries) == 0 {
+		entries = b.IoServiceBytes
+	}
+	for _, e := range entries {
+		switch {
+		case strings.EqualFold(e.Op, "Read"):
+			read += e.Value
+		case strings.EqualFold(e.Op, "Write"):
+			write += e.Value
+		}
+	}
+	return read, write
+}
+
 // Docker container resources from /containers/{id}/stats
 type ApiStats struct {
 	Read        time.Time `json:"read"`               // Time of stats generation
@@ -32,6 +68,7 @@ type ApiStats struct {
 	Networks    map[string]NetworkStats
 	CPUStats    CPUStats    `json:"cpu_stats"`
 	MemoryStats MemoryStats `json:"memory_stats"`
+	BlkioStats  BlkioStats  `json:"blkio_stats,omitempty"` // Linux only; block I/O
 }
 
 // Docker system info from /info API endpoint
@@ -134,7 +171,8 @@ type Stats struct {
 	Mem         float64   `json:"m" cbor:"2,keyasint"`
 	NetworkSent float64   `json:"ns,omitzero" cbor:"3,keyasint,omitzero"` // deprecated 0.18.3 (MB) - keep field for old agents/records
 	NetworkRecv float64   `json:"nr,omitzero" cbor:"4,keyasint,omitzero"` // deprecated 0.18.3 (MB) - keep field for old agents/records
-	Bandwidth   [2]uint64 `json:"b,omitzero" cbor:"9,keyasint,omitzero"`  // [sent bytes, recv bytes]
+	Bandwidth   [2]uint64 `json:"b,omitzero" cbor:"9,keyasint,omitzero"`   // [sent bytes, recv bytes]
+	DiskIO      [2]uint64 `json:"d,omitzero" cbor:"10,keyasint,omitzero"`  // [read bytes/s, write bytes/s]; Linux only
 
 	Health DockerHealth `json:"-" cbor:"5,keyasint"`
 	Status string       `json:"-" cbor:"6,keyasint"`

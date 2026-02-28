@@ -641,6 +641,23 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 						</ChartCard>
 					)}
 
+					{containerFilterBar && containerData.length > 0 && (
+						<ChartCard
+							empty={dataEmpty}
+							grid={grid}
+							title={dockerOrPodman(t`Docker Disk I/O`, isPodman)}
+							description={dockerOrPodman(t`Block I/O throughput of docker containers`, isPodman)}
+							cornerEl={containerFilterBar}
+						>
+							<ContainerChart
+								chartData={chartData}
+								chartType={ChartType.Disk}
+								dataKey="d"
+								chartConfig={containerChartConfigs.disk}
+							/>
+						</ChartCard>
+					)}
+
 					{/* Swap chart */}
 					{(systemStats.at(-1)?.stats.su ?? 0) > 0 && (
 						<ChartCard

@@ -473,6 +473,8 @@ func (rm *RecordManager) AverageContainerStats(db dbx.Builder, records RecordIds
 			}
 			sums[stat.Name].Bandwidth[0] += sentBytes
 			sums[stat.Name].Bandwidth[1] += recvBytes
+			sums[stat.Name].DiskIO[0] += stat.DiskIO[0]
+			sums[stat.Name].DiskIO[1] += stat.DiskIO[1]
 		}
 	}
 
@@ -483,6 +485,7 @@ func (rm *RecordManager) AverageContainerStats(db dbx.Builder, records RecordIds
 			Cpu:       twoDecimals(value.Cpu / count),
 			Mem:       twoDecimals(value.Mem / count),
 			Bandwidth: [2]uint64{uint64(float64(value.Bandwidth[0]) / count), uint64(float64(value.Bandwidth[1]) / count)},
+			DiskIO:    [2]uint64{uint64(float64(value.DiskIO[0]) / count), uint64(float64(value.DiskIO[1]) / count)},
 		})
 	}
 	return result
