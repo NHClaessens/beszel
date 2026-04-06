@@ -1,6 +1,9 @@
 import { useMemo, useState } from "react"
+import { useStore } from "@nanostores/react"
 import type { ChartConfig } from "@/components/ui/chart"
 import type { ChartData, SystemStats, SystemStatsRecord } from "@/types"
+import type { DataPoint } from "./area-chart"
+import { $containerFilter } from "@/lib/stores"
 
 /** Chart configurations for CPU, memory, network, and disk I/O usage charts */
 export interface ContainerChartConfigs {
@@ -103,9 +106,9 @@ export function useYAxisWidth() {
 			clearTimeout(timeout)
 			timeout = setTimeout(() => {
 				document.body.appendChild(div)
-				const width = div.offsetWidth + 24
+				const width = div.offsetWidth + 20 
 				if (width > yAxisWidth) {
-					setYAxisWidth(div.offsetWidth + 24)
+					setYAxisWidth(width)
 				}
 				document.body.removeChild(div)
 			})
@@ -113,6 +116,44 @@ export function useYAxisWidth() {
 		return str
 	}
 	return { yAxisWidth, updateYAxisWidth }
+}
+
+/** Subscribes to the container filter store and returns filtered DataPoints for container charts */
+export function useContainerDataPoints(
+	chartConfig: ChartConfig,
+	// biome-ignore lint/suspicious/noExplicitAny: container data records have dynamic keys
+	dataFn: (key: string, data: Record<string, any>) => number | null
+) {
+	const filter = useStore($containerFilter)
+	const { dataPoints, filteredKeys } = useMemo(() => {
+		const filterTerms = filter
+			? filter
+					.toLowerCase()
+					.split(" ")
+					.filter((term) => term.length > 0)
+			: []
+		const filtered = new Set<string>()
+		const points = Object.keys(chartConfig).map((key) => {
+			const isFiltered = filterTerms.length > 0 && !filterTerms.some((term) => key.toLowerCase().includes(term))
+			if (isFiltered) filtered.add(key)
+			return {
+				label: key,
+				// biome-ignore lint/suspicious/noExplicitAny: container data records have dynamic keys
+				dataKey: (data: Record<string, any>) => dataFn(key, data),
+				color: chartConfig[key].color ?? "",
+				opacity: isFiltered ? 0.05 : 0.4,
+				strokeOpacity: isFiltered ? 0.1 : 1,
+				activeDot: !isFiltered,
+				stackId: "a",
+			}
+		})
+		return {
+			// biome-ignore lint/suspicious/noExplicitAny: container data records have dynamic keys
+			dataPoints: points as DataPoint<Record<string, any>>[],
+			filteredKeys: filtered,
+		}
+	}, [chartConfig, filter])
+	return { filter, dataPoints, filteredKeys }
 }
 
 // Assures consistent colors for network interfaces

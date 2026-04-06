@@ -8,7 +8,7 @@ msgstr ""
 "Language: uk\n"
 "Project-Id-Version: beszel\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-31 21:16\n"
+"PO-Revision-Date: 2026-04-05 18:27\n"
 "Last-Translator: \n"
 "Language-Team: Ukrainian\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
@@ -17,6 +17,12 @@ msgstr ""
 "X-Crowdin-Language: uk\n"
 "X-Crowdin-File: /main/internal/site/src/locales/en/en.po\n"
 "X-Crowdin-File-ID: 32\n"
+
+#. placeholder {0}: newVersion.v
+#: src/components/footer-repo-link.tsx
+msgctxt "New version available"
+msgid "{0} available"
+msgstr "{0} доступно"
 
 #. placeholder {0}: table.getFilteredSelectedRowModel().rows.length
 #. placeholder {1}: table.getFilteredRowModel().rows.length
@@ -49,7 +55,7 @@ msgid "1 hour"
 msgstr "1 година"
 
 #. Load average
-#: src/components/charts/load-average-chart.tsx
+#: src/components/routes/system/charts/load-average-chart.tsx
 msgid "1 min"
 msgstr "1 хв"
 
@@ -66,7 +72,7 @@ msgid "12 hours"
 msgstr "12 годин"
 
 #. Load average
-#: src/components/charts/load-average-chart.tsx
+#: src/components/routes/system/charts/load-average-chart.tsx
 msgid "15 min"
 msgstr "15 хв"
 
@@ -79,7 +85,7 @@ msgid "30 days"
 msgstr "30 днів"
 
 #. Load average
-#: src/components/charts/load-average-chart.tsx
+#: src/components/routes/system/charts/load-average-chart.tsx
 msgid "5 min"
 msgstr "5 хв"
 
@@ -107,18 +113,13 @@ msgid "Active state"
 msgstr "Активний стан"
 
 #: src/components/add-system.tsx
+#: src/components/add-system.tsx
+#: src/components/navbar.tsx
+#: src/components/navbar.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Add {foo}"
 msgstr "Додати {foo}"
-
-#: src/components/add-system.tsx
-msgid "Add <0>System</0>"
-msgstr "Додати <0>Систему</0>"
-
-#: src/components/add-system.tsx
-msgid "Add system"
-msgstr "Додати систему"
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Add URL"
@@ -134,6 +135,7 @@ msgstr "Налаштувати ширину основного макету"
 
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
+#: src/components/navbar.tsx
 msgid "Admin"
 msgstr "Адміністратор"
 
@@ -163,6 +165,7 @@ msgstr "Сповіщення"
 #: src/components/command-palette.tsx
 #: src/components/containers-table/containers-table.tsx
 #: src/components/navbar.tsx
+#: src/components/navbar.tsx
 #: src/components/routes/containers.tsx
 msgid "All Containers"
 msgstr "Всі контейнери"
@@ -188,11 +191,11 @@ msgstr "Ви впевнені?"
 msgid "Automatic copy requires a secure context."
 msgstr "Автоматичне копіювання вимагає безпечного контексту."
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/chart-card.tsx
 msgid "Average"
 msgstr "Середнє"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average CPU utilization of containers"
 msgstr "Середнє використання CPU контейнерами"
 
@@ -206,20 +209,29 @@ msgstr "Середнє опускається нижче <0>{value}{0}</0>"
 msgid "Average exceeds <0>{value}{0}</0>"
 msgstr "Середнє перевищує <0>{value}{0}</0>"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
+msgid "Average number of I/O operations waiting to be serviced"
+msgstr "Середня кількість операцій вводу-виводу, що очікують на обслуговування"
+
+#: src/components/routes/system/charts/gpu-charts.tsx
 msgid "Average power consumption of GPUs"
 msgstr "Середнє енергоспоживання GPUs"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
+msgctxt "Disk I/O average operation time (iostat await)"
+msgid "Average queue to completion time per operation"
+msgstr "Середній час від черги до завершення на одну операцію"
+
+#: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Average system-wide CPU utilization"
 msgstr "Середнє використання CPU по всій системі"
 
 #. placeholder {0}: gpu.n
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/gpu-charts.tsx
 msgid "Average utilization of {0}"
 msgstr "Середнє використання {0}"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/gpu-charts.tsx
 msgid "Average utilization of GPU engines"
 msgstr "Середнє використання рушіїв GPU"
 
@@ -228,7 +240,7 @@ msgstr "Середнє використання рушіїв GPU"
 msgid "Backups"
 msgstr "Резервні копії"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/network-charts.tsx
 #: src/lib/alerts.ts
 msgid "Bandwidth"
 msgstr "Пропускна здатність"
@@ -236,9 +248,9 @@ msgstr "Пропускна здатність"
 #. Battery label in systems table header
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Bat"
-msgstr "Bat"
+msgstr "Батарея"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/sensor-charts.tsx
 #: src/lib/alerts.ts
 msgid "Battery"
 msgstr "Батарея"
@@ -292,7 +304,7 @@ msgstr "Стан завантаження"
 msgid "Bytes (KB/s, MB/s, GB/s)"
 msgstr "Байти (КБ/с, МБ/с, ГБ/с)"
 
-#: src/components/charts/mem-chart.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 msgid "Cache / Buffers"
 msgstr "Кеш / Буфери"
 
@@ -338,7 +350,7 @@ msgstr "Змінити одиниці вимірювання для метрик
 msgid "Change general application options."
 msgstr "Змінити загальні параметри програми."
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/sensor-charts.tsx
 msgid "Charge"
 msgstr "Заряд"
 
@@ -350,6 +362,10 @@ msgstr "Заряджається"
 #: src/components/routes/settings/general.tsx
 msgid "Chart options"
 msgstr "Параметри графіків"
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Chart width"
+msgstr "Ширина графіка"
 
 #: src/components/login/forgot-pass-form.tsx
 msgid "Check {email} for a reset link."
@@ -411,6 +427,10 @@ msgstr "Конфлікти"
 msgid "Connection is down"
 msgstr "З'єднання розірвано"
 
+#: src/components/routes/system.tsx
+msgid "Containers"
+msgstr "Контейнери"
+
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Continue"
@@ -436,6 +456,11 @@ msgstr "Копіювати docker run"
 msgctxt "Environment variables"
 msgid "Copy env"
 msgstr "Копіювати env"
+
+#: src/components/alerts/alerts-sheet.tsx
+msgctxt "Copy alerts from another system"
+msgid "Copy from"
+msgstr "Копіювати з"
 
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Copy host"
@@ -466,6 +491,11 @@ msgstr "Скопіюйте вміст <0>docker-compose.yml</0> для аген�
 msgid "Copy YAML"
 msgstr "Копіювати YAML"
 
+#: src/components/routes/system.tsx
+msgctxt "Core system metrics"
+msgid "Core"
+msgstr "Ядро"
+
 #: src/components/containers-table/containers-table-columns.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
@@ -488,8 +518,8 @@ msgstr "Час ЦП"
 msgid "CPU Time Breakdown"
 msgstr "Розподіл часу ЦП"
 
-#: src/components/routes/system.tsx
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/cpu-charts.tsx
+#: src/components/routes/system/charts/cpu-charts.tsx
 #: src/components/routes/system/cpu-sheet.tsx
 #: src/lib/alerts.ts
 msgid "CPU Usage"
@@ -521,7 +551,7 @@ msgid "Cumulative Upload"
 msgstr "Кумулятивне відвантаження"
 
 #. Context: Battery state
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/sensor-charts.tsx
 msgid "Current state"
 msgstr "Поточний стан"
 
@@ -534,6 +564,11 @@ msgstr "Цикли"
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Daily"
 msgstr "Щодня"
+
+#: src/components/routes/system/info-bar.tsx
+msgctxt "Default system layout option"
+msgid "Default"
+msgstr "За замовчуванням"
 
 #: src/components/routes/settings/general.tsx
 msgid "Default time period"
@@ -567,11 +602,12 @@ msgstr "Пристрій"
 msgid "Discharging"
 msgstr "Розряджається"
 
+#: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Disk"
 msgstr "Диск"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
 msgid "Disk I/O"
 msgstr "Дисковий ввід/вивід"
 
@@ -579,29 +615,30 @@ msgstr "Дисковий ввід/вивід"
 msgid "Disk unit"
 msgstr "Одиниця виміру диска"
 
-#: src/components/charts/disk-chart.tsx
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
 #: src/lib/alerts.ts
 msgid "Disk Usage"
 msgstr "Використання диска"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
 msgid "Disk usage of {extraFsName}"
 msgstr "Використання диска {extraFsName}"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/info-bar.tsx
+msgctxt "Layout display options"
+msgid "Display"
+msgstr "Відображення"
+
+#: src/components/routes/system/charts/cpu-charts.tsx
 msgid "Docker CPU Usage"
 msgstr "Використання ЦП Docker"
 
-#: src/components/routes/system.tsx
-msgid "Docker Disk I/O"
-msgstr "Дискове введення-виведення Docker"
-
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 msgid "Docker Memory Usage"
 msgstr "Використання пам'яті Docker"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/network-charts.tsx
 msgid "Docker Network I/O"
 msgstr "Мережевий ввід/вивід Docker"
 
@@ -778,7 +815,7 @@ msgstr "Невдало: {0}"
 
 #: src/components/containers-table/containers-table.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
-#: src/components/routes/system.tsx
+#: src/components/routes/system/chart-card.tsx
 #: src/components/routes/system/smart-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systems-table/systems-table.tsx
@@ -808,6 +845,7 @@ msgid "FreeBSD command"
 msgstr "Команда FreeBSD"
 
 #. Context: Battery state
+#: src/components/routes/system/info-bar.tsx
 #: src/lib/i18n.ts
 msgid "Full"
 msgstr "Повна"
@@ -823,10 +861,14 @@ msgid "Global"
 msgstr "Глобально"
 
 #: src/components/routes/system.tsx
+msgid "GPU"
+msgstr ""
+
+#: src/components/routes/system/charts/gpu-charts.tsx
 msgid "GPU Engines"
 msgstr "Рушії GPU"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/gpu-charts.tsx
 msgid "GPU Power Draw"
 msgstr "Енергоспоживання GPU"
 
@@ -834,6 +876,7 @@ msgstr "Енергоспоживання GPU"
 msgid "GPU Usage"
 msgstr "Використання GPU"
 
+#: src/components/routes/system/info-bar.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Grid"
 msgstr "Сітка"
@@ -844,7 +887,7 @@ msgstr "Здоров'я"
 
 #: src/components/routes/settings/layout.tsx
 msgid "Heartbeat"
-msgstr "Heartbeat"
+msgstr ""
 
 #: src/components/routes/settings/heartbeat.tsx
 msgid "Heartbeat Monitoring"
@@ -871,6 +914,21 @@ msgstr "HTTP-метод"
 #: src/components/routes/settings/heartbeat.tsx
 msgid "HTTP method: POST, GET, or HEAD (default: POST)"
 msgstr "HTTP-метод: POST, GET або HEAD (за замовчуванням: POST)"
+
+#: src/components/routes/system/disk-io-sheet.tsx
+msgctxt "Disk I/O average operation time (iostat await)"
+msgid "I/O Await"
+msgstr "Очікування вводу-виводу"
+
+#: src/components/routes/system/disk-io-sheet.tsx
+msgctxt "Disk I/O total time spent on read/write"
+msgid "I/O Time"
+msgstr "Час вводу-виводу"
+
+#: src/components/routes/system/charts/disk-charts.tsx
+msgctxt "Percent of time the disk is busy with I/O"
+msgid "I/O Utilization"
+msgstr "Використання вводу-виводу"
 
 #. Context: Battery state
 #: src/lib/i18n.ts
@@ -920,7 +978,7 @@ msgstr "Життєвий цикл"
 msgid "limit"
 msgstr "обмеження"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/load-average-chart.tsx
 msgid "Load Average"
 msgstr "Середнє навантаження"
 
@@ -949,6 +1007,7 @@ msgstr "Стан завантаження"
 msgid "Loading..."
 msgstr "Завантаження..."
 
+#: src/components/navbar.tsx
 #: src/components/navbar.tsx
 msgid "Log Out"
 msgstr "Вийти"
@@ -986,7 +1045,7 @@ msgid "Manual setup instructions"
 msgstr "Інструкції з ручного налаштування"
 
 #. Chart select field. Please try to keep this short.
-#: src/components/routes/system.tsx
+#: src/components/routes/system/chart-card.tsx
 msgid "Max 1 min"
 msgstr "Макс 1 хв"
 
@@ -1007,15 +1066,16 @@ msgstr "Обмеження пам'яті"
 msgid "Memory Peak"
 msgstr "Пік пам'яті"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 #: src/lib/alerts.ts
 msgid "Memory Usage"
 msgstr "Використання пам'яті"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 msgid "Memory usage of docker containers"
 msgstr "Використання пам'яті контейнерами Docker"
 
+#. Device model
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
 msgstr "Модель"
@@ -1033,11 +1093,11 @@ msgstr "Ім'я"
 msgid "Net"
 msgstr "Мережа"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/network-charts.tsx
 msgid "Network traffic of docker containers"
 msgstr "Мережевий трафік контейнерів Docker"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/network-charts.tsx
 #: src/components/routes/system/network-sheet.tsx
 #: src/components/routes/system/network-sheet.tsx
 #: src/components/routes/system/network-sheet.tsx
@@ -1179,6 +1239,10 @@ msgstr "Формат корисного навантаження"
 msgid "Per-core average utilization"
 msgstr "Середнє використання на ядро"
 
+#: src/components/routes/system/charts/disk-charts.tsx
+msgid "Percent of time the disk is busy with I/O"
+msgstr "Відсоток часу, протягом якого диск зайнятий вводом-виводом"
+
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Percentage of time spent in each state"
 msgstr "Відсоток часу, проведеного в кожному стані"
@@ -1228,13 +1292,18 @@ msgstr "Будь ласка, увійдіть у свій обліковий з�
 msgid "Port"
 msgstr "Порт"
 
+#: src/components/containers-table/containers-table-columns.tsx
+msgctxt "Container ports"
+msgid "Ports"
+msgstr "Порти"
+
 #. Power On Time
 #: src/components/routes/system/smart-table.tsx
 msgid "Power On"
 msgstr "Увімкнення живлення"
 
-#: src/components/routes/system.tsx
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/gpu-charts.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 msgid "Precise utilization at the recorded time"
 msgstr "Точне використання в записаний час"
 
@@ -1251,17 +1320,24 @@ msgstr "Процес запущено"
 msgid "Public Key"
 msgstr "Ключ"
 
+#: src/components/routes/system/disk-io-sheet.tsx
+msgctxt "Disk I/O average queue depth"
+msgid "Queue Depth"
+msgstr "Глибина черги"
+
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Quiet Hours"
 msgstr "Тихі години"
 
 #. Disk read
-#: src/components/routes/system.tsx
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
 msgid "Read"
 msgstr "Читання"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/network-charts.tsx
 msgid "Received"
 msgstr "Отримано"
 
@@ -1334,6 +1410,10 @@ msgstr "Деталі S.M.A.R.T."
 msgid "S.M.A.R.T. Self-Test"
 msgstr "Самодіагностика S.M.A.R.T."
 
+#: src/components/add-system.tsx
+msgid "Save {foo}"
+msgstr "Зберегти {foo}"
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Save address using enter key or comma. Leave blank to disable email notifications."
 msgstr "Збережіть адресу, використовуючи клавішу Enter або кому. Залиште порожнім, щоб вимкнути сповіщення електронною поштою."
@@ -1342,10 +1422,6 @@ msgstr "Збережіть адресу, використовуючи клаві
 #: src/components/routes/settings/notifications.tsx
 msgid "Save Settings"
 msgstr "Зберегти налаштування"
-
-#: src/components/add-system.tsx
-msgid "Save system"
-msgstr "Зберегти систему"
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Saved in the database and does not expire until you disable it."
@@ -1395,7 +1471,7 @@ msgstr "Надсилайте періодичні вихідні пінги на
 msgid "Send test heartbeat"
 msgstr "Надіслати тестовий heartbeat"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/network-charts.tsx
 msgid "Sent"
 msgstr "Відправлено"
 
@@ -1407,6 +1483,7 @@ msgstr "Серійний номер"
 msgid "Service Details"
 msgstr "Деталі служби"
 
+#: src/components/routes/system.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Services"
 msgstr "Служби"
@@ -1422,8 +1499,10 @@ msgstr "Встановіть наступні змінні оточення в �
 #: src/components/command-palette.tsx
 #: src/components/command-palette.tsx
 #: src/components/navbar.tsx
+#: src/components/navbar.tsx
 #: src/components/routes/settings/layout.tsx
 #: src/components/routes/settings/layout.tsx
+#: src/components/routes/system/info-bar.tsx
 msgid "Settings"
 msgstr "Налаштування"
 
@@ -1467,17 +1546,18 @@ msgstr "Статус"
 msgid "Sub State"
 msgstr "Підстан"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
 msgstr "Область підкачки, використана системою"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap Usage"
 msgstr "Використання підкачки"
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/navbar.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1489,7 +1569,7 @@ msgstr "Використання підкачки"
 msgid "System"
 msgstr "Система"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/load-average-chart.tsx
 msgid "System load averages over time"
 msgstr "Середнє навантаження системи з часом"
 
@@ -1509,6 +1589,11 @@ msgstr "Системи можуть керуватися у файлі <0>config
 msgid "Table"
 msgstr "Таблиця"
 
+#: src/components/routes/system/info-bar.tsx
+msgctxt "Tabs system layout option"
+msgid "Tabs"
+msgstr "Вкладки"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Tasks"
 msgstr "Завдання"
@@ -1519,7 +1604,7 @@ msgstr "Завдання"
 msgid "Temp"
 msgstr "Температура"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/sensor-charts.tsx
 #: src/lib/alerts.ts
 msgid "Temperature"
 msgstr "Температура"
@@ -1528,7 +1613,7 @@ msgstr "Температура"
 msgid "Temperature unit"
 msgstr "Одиниця вимірювання температури"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/sensor-charts.tsx
 msgid "Temperatures of system sensors"
 msgstr "Температури датчиків системи"
 
@@ -1560,11 +1645,11 @@ msgstr "Цю дію не можна скасувати. Це назавжди в
 msgid "This will permanently delete all selected records from the database."
 msgstr "Це назавжди видалить усі вибрані записи з бази даних."
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
 msgid "Throughput of {extraFsName}"
 msgstr "Пропускна здатність {extraFsName}"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
 msgid "Throughput of root filesystem"
 msgstr "Пропускна здатність кореневої файлової системи"
 
@@ -1575,11 +1660,6 @@ msgstr "Формат часу"
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "На електронну пошту"
-
-#: src/components/routes/system/info-bar.tsx
-#: src/components/routes/system/info-bar.tsx
-msgid "Toggle grid"
-msgstr "Перемкнути сітку"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
@@ -1617,6 +1697,11 @@ msgstr "Загальний обсяг отриманих даних для ко�
 #: src/components/routes/system/network-sheet.tsx
 msgid "Total data sent for each interface"
 msgstr "Загальний обсяг відправлених даних для кожного інтерфейсу"
+
+#: src/components/routes/system/disk-io-sheet.tsx
+msgctxt "Disk I/O"
+msgid "Total time spent on read/write (can exceed 100%)"
+msgstr ""
 
 #. placeholder {0}: data.length
 #: src/components/systemd-table/systemd-table.tsx
@@ -1736,22 +1821,22 @@ msgstr "Відвантажити"
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Uptime"
-msgstr "Uptime"
+msgstr "Час роботи"
 
-#: src/components/routes/system.tsx
-#: src/components/routes/system.tsx
-#: src/components/routes/system.tsx
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/routes/system/charts/gpu-charts.tsx
+#: src/components/routes/system/charts/gpu-charts.tsx
+#: src/components/routes/system/charts/gpu-charts.tsx
 #: src/components/routes/system/cpu-sheet.tsx
 msgid "Usage"
 msgstr "Використання"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
 msgid "Usage of root partition"
 msgstr "Використання кореневого розділу"
 
-#: src/components/charts/mem-chart.tsx
-#: src/components/charts/swap-chart.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
+#: src/components/routes/system/charts/memory-charts.tsx
 msgid "Used"
 msgstr "Використано"
 
@@ -1759,6 +1844,11 @@ msgstr "Використано"
 #: src/components/navbar.tsx
 msgid "Users"
 msgstr "Користувачі"
+
+#: src/components/routes/system/charts/disk-charts.tsx
+msgctxt "Disk I/O utilization"
+msgid "Utilization"
+msgstr "Використання"
 
 #: src/components/alerts-history-columns.tsx
 msgid "Value"
@@ -1769,6 +1859,7 @@ msgid "View"
 msgstr "Вигляд"
 
 #: src/components/routes/system/cpu-sheet.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
 #: src/components/routes/system/network-sheet.tsx
 msgid "View more"
 msgstr "Переглянути більше"
@@ -1781,7 +1872,7 @@ msgstr "Переглянути 200 останніх сповіщень."
 msgid "Visible Fields"
 msgstr "Видимі стовпці"
 
-#: src/components/routes/system.tsx
+#: src/components/routes/system/chart-card.tsx
 msgid "Waiting for enough records to display"
 msgstr "Очікування достатньої кількості записів для відображення"
 
@@ -1820,8 +1911,10 @@ msgid "Windows command"
 msgstr "Команда Windows"
 
 #. Disk write
-#: src/components/routes/system.tsx
-#: src/components/routes/system.tsx
+#: src/components/routes/system/charts/disk-charts.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
+#: src/components/routes/system/disk-io-sheet.tsx
 msgid "Write"
 msgstr "Запис"
 
